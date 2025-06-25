@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Pricing • Sippurim Bot</title>
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="no-sidebar">
+  <!-- Header (reuse your existing header include if you have one) -->
+  <section id="header">
+    <div class="container">
+      <h1><a href="index.html">Sippurim Bot</a></h1>
+      <p>Pricing • תמחור</p>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <div id="main">
+    <div class="container">
+      <section id="content">
+        <article class="box post">
+          <header>
+            <h2>Стоимость доступа / מחיר גישה</h2>
+          </header>
+
+          <!-- Russian -->
+          <p lang="ru" dir="ltr">
+            Доступ к боту стоит <strong>10&nbsp;€</strong> и обеспечивает
+            пожизненный доступ к тщательно отобранной коллекции из&nbsp;350
+            израильских песен всех жанров, сопровождаемых словарём и ссылками
+            на полный текст.
+          </p>
+
+          <!-- Hebrew -->
+          <p lang="he" dir="rtl" style="text-align:right">
+            הגישה לבוט עולה <strong>10&nbsp;€</strong> ומקנה גישה לכל החיים
+            לאוסף מוקפד של&nbsp;350 שירים ישראליים מכל הסוגות, עם מילון וקישורים
+            לטקסט המלא.
+          </p>
+
+          <ul class="actions">
+            <li><a href="https://t.me/SippurimBot" class="button primary">
+              לרכישה / Купить</a></li>
+          </ul>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <!-- Footer (reuse existing footer include) -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
