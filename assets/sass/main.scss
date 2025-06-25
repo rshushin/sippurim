@@ -896,6 +896,9 @@
 		}
 
 		> .container {
+			display: flex;                   /* new */
+  			flex-direction: column;
+  			align-items: center; 
 			position: relative;
 
 			&:before, &:after {
