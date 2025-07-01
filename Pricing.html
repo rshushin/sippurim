@@ -76,122 +76,109 @@
 
 <!-- ▸ Paddle checkout integration -------------------------------------- -->
 <!-- ▸ Paddle checkout integration - UPDATED FOR BOT INTEGRATION ------ -->
-<script type="module">
-import { initializePaddle, Paddle } from "https://cdn.jsdelivr.net/npm/@paddle/paddle-js/+esm";
-
-/**
- * Initialize Paddle.js directly with seller ID (no token needed for basic setup)
- */
-console.log('Initializing Paddle...');
-
-initializePaddle({
-  seller: 229973,  // Your Paddle seller ID
-  environment: 'production',  // Use 'sandbox' for testing
-  checkout: { 
-    settings: { 
-      displayMode: "overlay", 
-      variant: "one-page",
-      theme: "light"
-    } 
-  },
-  eventCallback: ev => {
-    console.log('Paddle event:', ev);
-    
-    if (ev.name === "checkout.completed") {
-      // Show success message briefly
-      const buyBtn = document.getElementById("buy-now");
-      if (buyBtn) {
-        buyBtn.innerHTML = "✅ Payment completed! Redirecting...";
-        buyBtn.disabled = true;
-      }
-      
-      // Return to Telegram bot after payment
-      setTimeout(() => {
-        window.location.href = "https://t.me/Sippurim_Bot?start=payment_success";
-      }, 2000);
-    }
-    
-    if (ev.name === "checkout.closed") {
-      // User closed checkout - reset button
-      const buyBtn = document.getElementById("buy-now");
-      if (buyBtn) {
-        buyBtn.innerHTML = "Buy&nbsp;now&nbsp;/&nbsp;Купить";
-        buyBtn.disabled = false;
-      }
-    }
-    
-    if (ev.name === "checkout.error") {
-      console.error('Paddle checkout error:', ev.data);
-      const buyBtn = document.getElementById("buy-now");
-      if (buyBtn) {
-        buyBtn.innerHTML = "❌ Error - Try again";
-        buyBtn.disabled = false;
-      }
-    }
-  }
-});
-
-/**
- * Check if this page was opened with a transaction ID from the bot
- */
-const params = new URLSearchParams(window.location.search);
-const txnId = params.get("_ptxn");
-
-if (txnId) {
-  console.log('Bot transaction detected:', txnId);
+<!-- ▸ Paddle checkout integration - SIMPLE AND RELIABLE VERSION ------ -->
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+// Wait for DOM and Paddle to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🔧 DOM loaded, initializing Paddle...');
   
-  // Show loading state for bot users
-  const buyBtn = document.getElementById("buy-now");
-  if (buyBtn) {
-    buyBtn.innerHTML = "🔄 Opening checkout...";
-    buyBtn.disabled = true;
-  }
-  
-  // Open Paddle checkout for the transaction from bot
-  setTimeout(() => {
-    Paddle.Checkout.open({ transactionId: txnId });
-  }, 1000); // Small delay to ensure Paddle is fully loaded
-}
-
-/**
- * Handle direct website purchases - redirect to Telegram bot
- */
-const buyBtn = document.getElementById("buy-now");
-if (buyBtn && !txnId) {  // Only add listener if not a bot transaction
-  buyBtn.addEventListener("click", async evt => {
-    evt.preventDefault();
-    
-    // Redirect to Telegram bot for payment
-    window.location.href = "https://t.me/Sippurim_Bot?start=buy";
+  // Initialize Paddle
+  Paddle.Setup({
+    seller: 229973,  // Your Paddle seller ID
+    environment: 'production'  // Use 'sandbox' for testing
   });
   
-  // Update button text to indicate it goes to Telegram
-  buyBtn.innerHTML = "🤖 Buy via Telegram Bot";
-  buyBtn.style.background = "#0088cc"; // Telegram blue
-}
+  console.log('🔧 Paddle initialized');
 
-// Add some visual feedback for bot users
-if (txnId) {
-  // Add a notice for bot users
-  const contentSection = document.querySelector('#content article');
-  if (contentSection) {
-    const botNotice = document.createElement('div');
-    botNotice.style.cssText = `
-      background: #e3f2fd;
-      border: 1px solid #2196f3;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 20px 0;
-      text-align: center;
-      color: #1565c0;
-    `;
-    botNotice.innerHTML = `
-      <strong>🤖 Payment from Hebrew Learning Bot</strong><br>
-      <small>Secure checkout will open automatically...</small>
-    `;
-    contentSection.appendChild(botNotice);
+  /**
+   * Check if this page was opened with a transaction ID from the bot
+   */
+  const params = new URLSearchParams(window.location.search);
+  const txnId = params.get("_ptxn");
+
+  if (txnId) {
+    console.log('🔧 Bot transaction detected:', txnId);
+    
+    // Show loading state for bot users
+    const buyBtn = document.getElementById("buy-now");
+    if (buyBtn) {
+      buyBtn.innerHTML = "🔄 Opening checkout...";
+      buyBtn.style.pointerEvents = 'none';
+      buyBtn.style.opacity = '0.7';
+    }
+    
+    // Add visual notice for bot users
+    const contentSection = document.querySelector('.box.post');
+    if (contentSection) {
+      const botNotice = document.createElement('div');
+      botNotice.style.cssText = `
+        background: #e3f2fd;
+        border: 2px solid #2196f3;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        color: #1565c0;
+        font-weight: bold;
+      `;
+      botNotice.innerHTML = `
+        🤖 <strong>Payment from Hebrew Learning Bot</strong><br>
+        <small>Secure checkout opening automatically...</small>
+      `;
+      contentSection.appendChild(botNotice);
+    }
+    
+    // Open Paddle checkout for the transaction from bot
+    setTimeout(() => {
+      console.log('🔧 Opening Paddle checkout for transaction:', txnId);
+      
+      Paddle.Checkout.open({
+        override: `https://sippurim.com/pricing.html?_ptxn=${txnId}`,
+        successCallback: function(data) {
+          console.log('🔧 Payment completed:', data);
+          // Return to Telegram bot after payment
+          setTimeout(() => {
+            window.location.href = "https://t.me/Sippurim_Bot?start=payment_success";
+          }, 2000);
+        },
+        closeCallback: function(data) {
+          console.log('🔧 Checkout closed:', data);
+          // Reset button state
+          const buyBtn = document.getElementById("buy-now");
+          if (buyBtn) {
+            buyBtn.innerHTML = "BUY NOW / КУПИТЬ";
+            buyBtn.style.pointerEvents = 'auto';
+            buyBtn.style.opacity = '1';
+          }
+        }
+      });
+    }, 1500);
   }
-}
+
+  /**
+   * Handle direct website purchases - redirect to Telegram bot
+   */
+  const buyBtn = document.getElementById("buy-now");
+  if (buyBtn && !txnId) {
+    console.log('🔧 Setting up buy button for website visitors');
+    
+    buyBtn.addEventListener("click", function(evt) {
+      evt.preventDefault();
+      console.log('🔧 Redirecting to Telegram bot');
+      
+      // Redirect to Telegram bot for payment
+      window.location.href = "https://t.me/Sippurim_Bot?start=buy";
+    });
+    
+    // Update button text and style to indicate it goes to Telegram
+    buyBtn.innerHTML = "🤖 BUY VIA TELEGRAM BOT / КУПИТЬ ЧЕРЕЗ БОТА";
+    buyBtn.style.background = "#0088cc"; // Telegram blue
+    buyBtn.style.borderColor = "#0088cc";
+  }
+  
+  console.log('🔧 Paddle integration setup complete');
+});
 </script>
 </body>
 </html>
