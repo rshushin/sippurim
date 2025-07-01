@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>Pricing • Sippurim Bot</title>
+  <title>Pay • Sippurim Bot</title>
 
-  <!-- Theme stylesheet -->
+  <!-- Theme stylesheet (leave as‑is) -->
   <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 <body class="no-sidebar">
@@ -14,22 +14,16 @@
   <header id="header">
     <div class="container">
       <h1><a href="index.html">Sippurim Bot</a></h1>
-      <p>Pricing • Стоимость</p>
+      <p>Pay • Оплата</p>
     </div>
 
     <nav id="nav">
       <ul>
         <li><a class="icon solid fa-home" href="index.html"><span>Home</span></a></li>
-
-        <!-- Current page -->
-        <li class="current">
-          <a class="icon solid fa-tags" href="pricing.html"><span>Pricing</span></a>
-        </li>
-
-        <!-- NB: Filenames below must match the ones you actually pushed (case-sensitive on GitHub Pages) -->
-        <li><a class="icon solid fa-file"       href="Refund.html"><span>Refund</span></a></li>
+        <li class="current"><a class="icon solid fa-tags" href="pricing.html"><span>Pricing</span></a></li>
+        <li><a class="icon solid fa-file" href="Refund.html"><span>Refund</span></a></li>
         <li><a class="icon solid fa-shield-alt" href="Privacy.html"><span>Privacy</span></a></li>
-        <li><a class="icon solid fa-book"       href="Terms.html"><span>Terms</span></a></li>
+        <li><a class="icon solid fa-book" href="Terms.html"><span>Terms</span></a></li>
       </ul>
     </nav>
   </header>
@@ -39,32 +33,24 @@
     <div class="container">
       <section id="content">
         <article class="box post">
-          <header><h2>Price / Стоимость</h2></header>
+          <header><h2>Price • Стоимость</h2></header>
 
           <!-- English -->
           <p lang="en">
-            Access to the bot costs <strong>€10</strong> and grants lifetime
-            access to a carefully curated collection of&nbsp;350 Israeli songs
-            from every genre, each accompanied by a vocabulary list and links
-            to the full lyrics.
+            Lifetime access costs <strong>€10</strong> and unlocks 350 curated Israeli songs with vocabulary & lyric links.
           </p>
 
           <!-- Russian -->
           <p lang="ru">
-            Доступ к боту стоит <strong>10&nbsp;€</strong> и обеспечивает
-            пожизненный доступ к тщательно отобранной коллекции из&nbsp;350
-            израильских песен всех жанров, сопровождаемых словарём и ссылками
-            на полный текст.
+            Пожизненный доступ стоит <strong>10&nbsp;€</strong> и открывает 350 израильских песен со словарём и ссылками на текст.
           </p>
 
           <!-- Buttons -->
           <ul class="actions">
-            <!-- Paddle checkout (replace 123456 once you have a real Product ID) -->
+            <!-- This button works for visitors who arrive WITHOUT a _ptxn parameter.
+                 It creates a Transaction on your backend then opens the Paddle overlay. -->
             <li>
-              <a class="button primary"
-                 href="https://checkout.paddle.com/checkout/product/123456?title=Sippurim%20Bot%20Lifetime%20Access">
-                Buy&nbsp;now&nbsp;/&nbsp;Купить
-              </a>
+              <a id="buy-now" class="button primary" href="#">Buy&nbsp;now&nbsp;/&nbsp;Купить</a>
             </li>
           </ul>
         </article>
@@ -87,5 +73,65 @@
 <script src="assets/js/breakpoints.min.js"></script>
 <script src="assets/js/util.js"></script>
 <script src="assets/js/main.js"></script>
+
+<!-- ▸ Paddle checkout integration -------------------------------------- -->
+<script type="module">
+import { initializePaddle, Paddle } from "https://cdn.jsdelivr.net/npm/@paddle/paddle-js/+esm";
+
+/**
+ * 1. Fetch a short‑lived client‑side token issued by your server.
+ *    Replace the endpoint below with your real one.
+ */
+async function getPaddleToken () {
+  const res = await fetch("/api/paddle-token");
+  if (!res.ok) throw new Error("Cannot fetch Paddle token");
+  return (await res.json()).token;
+}
+
+/**
+ * 2. Boot Paddle.js once (token must be obtained first).
+ */
+const token = await getPaddleToken();
+initializePaddle({
+  token,
+  checkout: { settings: { displayMode: "overlay", variant: "one-page" } },
+  eventCallback: ev => {
+    if (ev.name === "checkout.completed") {
+      // Instant return to Telegram when payment succeeds.
+      window.location.href = "https://t.me/Sippurim_Bot";
+    }
+  }
+});
+
+/**
+ * 3. If the page was opened with ?_ptxn=txn_… (Telegram flow), open that transaction.
+ */
+const params = new URLSearchParams(window.location.search);
+const txnId = params.get("_ptxn");
+if (txnId) {
+  Paddle.Checkout.open({ transactionId: txnId });
+}
+
+/**
+ * 4. Fallback: user clicked the Buy button directly on the website (no _ptxn yet).
+ *    Call your backend to create a transaction for the visitor, then open overlay.
+ */
+const buyBtn = document.getElementById("buy-now");
+if (buyBtn) {
+  buyBtn.addEventListener("click", async evt => {
+    evt.preventDefault();
+    // (Replace /api/create-transaction with your real endpoint.)
+    const res = await fetch("/api/create-transaction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ price_id: "pri_01jz23cdy0kca8qtntxbseed39" })
+    });
+    if (!res.ok) { alert("Failed to start checkout, please try again."); return; }
+    const { checkout_url } = await res.json();
+    // Paddle auto‑detects the _ptxn param in the URL we’re about to visit
+    window.location.href = checkout_url; // reloads page with ?_ptxn=txn_…
+  });
+}
+</script>
 </body>
 </html>
