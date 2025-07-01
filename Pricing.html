@@ -75,62 +75,122 @@
 <script src="assets/js/main.js"></script>
 
 <!-- ▸ Paddle checkout integration -------------------------------------- -->
+<!-- ▸ Paddle checkout integration - UPDATED FOR BOT INTEGRATION ------ -->
 <script type="module">
 import { initializePaddle, Paddle } from "https://cdn.jsdelivr.net/npm/@paddle/paddle-js/+esm";
 
 /**
- * 1. Fetch a short‑lived client‑side token issued by your server.
- *    Replace the endpoint below with your real one.
+ * Initialize Paddle.js directly with seller ID (no token needed for basic setup)
  */
-async function getPaddleToken () {
-  const res = await fetch("/api/paddle-token");
-  if (!res.ok) throw new Error("Cannot fetch Paddle token");
-  return (await res.json()).token;
-}
+console.log('Initializing Paddle...');
 
-/**
- * 2. Boot Paddle.js once (token must be obtained first).
- */
-const token = await getPaddleToken();
 initializePaddle({
-  token,
-  checkout: { settings: { displayMode: "overlay", variant: "one-page" } },
+  seller: 229973,  // Your Paddle seller ID
+  environment: 'production',  // Use 'sandbox' for testing
+  checkout: { 
+    settings: { 
+      displayMode: "overlay", 
+      variant: "one-page",
+      theme: "light"
+    } 
+  },
   eventCallback: ev => {
+    console.log('Paddle event:', ev);
+    
     if (ev.name === "checkout.completed") {
-      // Instant return to Telegram when payment succeeds.
-      window.location.href = "https://t.me/Sippurim_Bot";
+      // Show success message briefly
+      const buyBtn = document.getElementById("buy-now");
+      if (buyBtn) {
+        buyBtn.innerHTML = "✅ Payment completed! Redirecting...";
+        buyBtn.disabled = true;
+      }
+      
+      // Return to Telegram bot after payment
+      setTimeout(() => {
+        window.location.href = "https://t.me/Sippurim_Bot?start=payment_success";
+      }, 2000);
+    }
+    
+    if (ev.name === "checkout.closed") {
+      // User closed checkout - reset button
+      const buyBtn = document.getElementById("buy-now");
+      if (buyBtn) {
+        buyBtn.innerHTML = "Buy&nbsp;now&nbsp;/&nbsp;Купить";
+        buyBtn.disabled = false;
+      }
+    }
+    
+    if (ev.name === "checkout.error") {
+      console.error('Paddle checkout error:', ev.data);
+      const buyBtn = document.getElementById("buy-now");
+      if (buyBtn) {
+        buyBtn.innerHTML = "❌ Error - Try again";
+        buyBtn.disabled = false;
+      }
     }
   }
 });
 
 /**
- * 3. If the page was opened with ?_ptxn=txn_… (Telegram flow), open that transaction.
+ * Check if this page was opened with a transaction ID from the bot
  */
 const params = new URLSearchParams(window.location.search);
 const txnId = params.get("_ptxn");
+
 if (txnId) {
-  Paddle.Checkout.open({ transactionId: txnId });
+  console.log('Bot transaction detected:', txnId);
+  
+  // Show loading state for bot users
+  const buyBtn = document.getElementById("buy-now");
+  if (buyBtn) {
+    buyBtn.innerHTML = "🔄 Opening checkout...";
+    buyBtn.disabled = true;
+  }
+  
+  // Open Paddle checkout for the transaction from bot
+  setTimeout(() => {
+    Paddle.Checkout.open({ transactionId: txnId });
+  }, 1000); // Small delay to ensure Paddle is fully loaded
 }
 
 /**
- * 4. Fallback: user clicked the Buy button directly on the website (no _ptxn yet).
- *    Call your backend to create a transaction for the visitor, then open overlay.
+ * Handle direct website purchases - redirect to Telegram bot
  */
 const buyBtn = document.getElementById("buy-now");
-if (buyBtn) {
+if (buyBtn && !txnId) {  // Only add listener if not a bot transaction
   buyBtn.addEventListener("click", async evt => {
     evt.preventDefault();
-    // (Replace /api/create-transaction with your real endpoint.)
-    const res = await fetch("/api/create-transaction", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ price_id: "pri_01jz23cdy0kca8qtntxbseed39" })
-    });
-    if (!res.ok) { alert("Failed to start checkout, please try again."); return; }
-    const { checkout_url } = await res.json();
-    // Paddle auto‑detects the _ptxn param in the URL we’re about to visit
-    window.location.href = checkout_url; // reloads page with ?_ptxn=txn_…
+    
+    // Redirect to Telegram bot for payment
+    window.location.href = "https://t.me/Sippurim_Bot?start=buy";
   });
+  
+  // Update button text to indicate it goes to Telegram
+  buyBtn.innerHTML = "🤖 Buy via Telegram Bot";
+  buyBtn.style.background = "#0088cc"; // Telegram blue
+}
+
+// Add some visual feedback for bot users
+if (txnId) {
+  // Add a notice for bot users
+  const contentSection = document.querySelector('#content article');
+  if (contentSection) {
+    const botNotice = document.createElement('div');
+    botNotice.style.cssText = `
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+      color: #1565c0;
+    `;
+    botNotice.innerHTML = `
+      <strong>🤖 Payment from Hebrew Learning Bot</strong><br>
+      <small>Secure checkout will open automatically...</small>
+    `;
+    contentSection.appendChild(botNotice);
+  }
 }
 </script>
 </body>
