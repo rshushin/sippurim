@@ -78,20 +78,11 @@
 <!-- ▸ Paddle checkout integration - UPDATED FOR BOT INTEGRATION ------ -->
 <!-- ▸ Paddle checkout integration - SIMPLE AND RELIABLE VERSION ------ -->
 <!-- ▸ Paddle checkout integration - SIMPLE AND RELIABLE VERSION ------ -->
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<!-- ▸ Simple Telegram Bot Redirect - NO PADDLE COMPLEXITY ------ -->
 <script>
-// Wait for DOM and Paddle to be ready
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🔧 DOM loaded, initializing Paddle...');
+  console.log('🔧 Setting up Telegram bot redirect...');
   
-  // Initialize Paddle
-  Paddle.Setup({
-    seller: 229973,  // Your Paddle seller ID
-    environment: 'production'  // Use 'sandbox' for testing
-  });
-  
-  console.log('🔧 Paddle initialized');
-
   /**
    * Check if this page was opened with a transaction ID from the bot
    */
@@ -104,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show loading state for bot users
     const buyBtn = document.getElementById("buy-now");
     if (buyBtn) {
-      buyBtn.innerHTML = "🔄 Opening checkout...";
+      buyBtn.innerHTML = "🔄 Processing bot payment...";
       buyBtn.style.pointerEvents = 'none';
       buyBtn.style.opacity = '0.7';
     }
@@ -125,44 +116,24 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
       botNotice.innerHTML = `
         🤖 <strong>Payment from Hebrew Learning Bot</strong><br>
-        <small>Secure checkout opening automatically...</small>
+        <small>This feature is being set up. Please return to the bot to complete payment.</small><br>
+        <a href="https://t.me/Sippurim_Bot" style="color: #1565c0; text-decoration: underline;">Return to Bot</a>
       `;
       contentSection.appendChild(botNotice);
     }
     
-    // Open Paddle checkout for the transaction from bot
+    // For now, redirect back to bot (we'll implement full Paddle later)
     setTimeout(() => {
-      console.log('🔧 Opening Paddle checkout for transaction:', txnId);
-      
-      Paddle.Checkout.open({
-        override: `https://sippurim.com/pricing.html?_ptxn=${txnId}`,
-        successCallback: function(data) {
-          console.log('🔧 Payment completed:', data);
-          // Return to Telegram bot after payment
-          setTimeout(() => {
-            window.location.href = "https://t.me/Sippurim_Bot?start=payment_success";
-          }, 2000);
-        },
-        closeCallback: function(data) {
-          console.log('🔧 Checkout closed:', data);
-          // Reset button state
-          const buyBtn = document.getElementById("buy-now");
-          if (buyBtn) {
-            buyBtn.innerHTML = "BUY NOW / КУПИТЬ";
-            buyBtn.style.pointerEvents = 'auto';
-            buyBtn.style.opacity = '1';
-          }
-        }
-      });
-    }, 1500);
+      window.location.href = "https://t.me/Sippurim_Bot?start=payment_continue";
+    }, 3000);
   }
 
   /**
-   * Handle direct website purchases - redirect to Telegram bot
+   * Handle all website purchases - redirect to Telegram bot
    */
   const buyBtn = document.getElementById("buy-now");
-  if (buyBtn && !txnId) {
-    console.log('🔧 Setting up buy button for website visitors');
+  if (buyBtn) {
+    console.log('🔧 Setting up buy button redirect to Telegram');
     
     buyBtn.addEventListener("click", function(evt) {
       evt.preventDefault();
@@ -176,9 +147,21 @@ document.addEventListener('DOMContentLoaded', function() {
     buyBtn.innerHTML = "🤖 BUY VIA TELEGRAM BOT / КУПИТЬ ЧЕРЕЗ БОТА";
     buyBtn.style.background = "#0088cc"; // Telegram blue
     buyBtn.style.borderColor = "#0088cc";
+    buyBtn.style.transition = "all 0.3s ease";
+    
+    // Add hover effect
+    buyBtn.onmouseover = function() {
+      this.style.background = "#006699";
+      this.style.transform = "translateY(-2px)";
+    };
+    
+    buyBtn.onmouseout = function() {
+      this.style.background = "#0088cc";
+      this.style.transform = "translateY(0)";
+    };
   }
   
-  console.log('🔧 Paddle integration setup complete');
+  console.log('🔧 Telegram redirect setup complete');
 });
 </script>
 </body>
