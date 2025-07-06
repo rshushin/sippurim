@@ -75,31 +75,36 @@
 <script src="assets/js/main.js"></script>
 
 <!-- ▸ Paddle checkout integration -->
+<!-- 1️⃣  Include Paddle.js (UMD build works everywhere) -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  /* 1️⃣  Sandbox while you test */
+  /* 2️⃣  Tell Paddle we’re in the Sandbox */
   Paddle.Environment.set('sandbox');
 
-  /* 2️⃣  If the bot sent us with ?_ptxn=… → open checkout */
-  const txnId = new URLSearchParams(location.search).get('_ptxn');
-  if (txnId) {
-    Paddle.Checkout.open({
-      transactionId: txnId,
-      onCheckoutComplete: () => {
-        /* back to Telegram when payment succeeds */
-        location.href = 'https://t.me/Sippurim_Bot?start=payment_success';
-      }
-    });
-  }
+  /* 3️⃣  Authenticate this page with a SANDBOX client-side token.
+         Create one in Dashboard → Developer tools → Authentication. */
+  Paddle.Initialize({
+    token: 'test_6da40b448a20d38ca4370d87a8e'   // ← paste YOUR token
+  }).then(() => {
 
-  /* 3️⃣  ‘Buy now’ button for normal visitors */
-  const buyBtn = document.getElementById('buy-now');
-  if (buyBtn) {
-    buyBtn.addEventListener('click', e => {
-      e.preventDefault();
-      location.href = 'https://t.me/Sippurim_Bot?start=buy';
-    });
-  }
+    /* 4️⃣  If the bot sent us here with ?_ptxn=… open the overlay */
+    const txnId = new URLSearchParams(location.search).get('_ptxn');
+    if (txnId) {
+      Paddle.Checkout.open({
+        transactionId: txnId,
+
+        /* Optional: kick user back to Telegram when payment succeeds */
+        onCheckoutComplete: () =>
+          location.href = 'https://t.me/Sippurim_Bot?start=payment_success'
+      });
+    }
+  });
+
+  /* 5️⃣  Fallback button for visitors who came without a _ptxn */
+  document.getElementById('buy-now')?.addEventListener('click', e => {
+    e.preventDefault();
+    location.href = 'https://t.me/Sippurim_Bot?start=buy';
+  });
 </script>
 </body>
 </html>
