@@ -79,23 +79,31 @@
   import { initializePaddle, Paddle } from
         "https://cdn.jsdelivr.net/npm/@paddle/paddle-js/+esm";
 
-  /* 1️⃣  Initial-setup: use sandbox until you switch to Live */
-  initializePaddle({ environment: "sandbox" });
+  // 1️⃣  Grab the transaction id (if the bot sent us here)
+  const txnId = new URLSearchParams(location.search).get("_ptxn");
 
-  const params = new URLSearchParams(window.location.search);
-  const txnId  = params.get("_ptxn");
+  /* 2️⃣  Initialise Paddle **first**, then open the overlay */
+  initializePaddle({ environment: "sandbox" }).then(() => {
+    if (txnId) {
+      Paddle.Checkout.open({
+        transactionId: txnId,
+        onCheckoutComplete: () => {
+          /* back to bot when payment succeeds */
+          location.href = "https://t.me/Sippurim_Bot?start=payment_success";
+        },
+        onCheckoutClose: () => {
+          /* user closed popup – just stay on page or go back */
+        }
+      });
+    }
+  });
 
-  /* 2️⃣  If the bot sent us here with a transaction ID → open checkout */
-  if (txnId) {
-    Paddle.Checkout.open({ transactionId: txnId });
-  }
-
-  /* 3️⃣  Button for normal site visitors – still routes to Telegram bot */
+  /* 3️⃣  Keep the red BUY button for normal visitors */
   const buyBtn = document.getElementById("buy-now");
   if (buyBtn) {
     buyBtn.addEventListener("click", e => {
       e.preventDefault();
-      window.location.href = "https://t.me/Sippurim_Bot?start=buy";
+      location.href = "https://t.me/Sippurim_Bot?start=buy";
     });
   }
 </script>
