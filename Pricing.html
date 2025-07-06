@@ -75,35 +75,29 @@
 <script src="assets/js/main.js"></script>
 
 <!-- ▸ Paddle checkout integration -->
-<script type="module">
-  import { initializePaddle, Paddle } from
-        "https://cdn.jsdelivr.net/npm/@paddle/paddle-js/+esm";
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+  /* 1️⃣  Sandbox while you test */
+  Paddle.Environment.set('sandbox');
 
-  // 1️⃣  Grab the transaction id (if the bot sent us here)
-  const txnId = new URLSearchParams(location.search).get("_ptxn");
+  /* 2️⃣  If the bot sent us with ?_ptxn=… → open checkout */
+  const txnId = new URLSearchParams(location.search).get('_ptxn');
+  if (txnId) {
+    Paddle.Checkout.open({
+      transactionId: txnId,
+      onCheckoutComplete: () => {
+        /* back to Telegram when payment succeeds */
+        location.href = 'https://t.me/Sippurim_Bot?start=payment_success';
+      }
+    });
+  }
 
-  /* 2️⃣  Initialise Paddle **first**, then open the overlay */
-  initializePaddle({ environment: "sandbox" }).then(() => {
-    if (txnId) {
-      Paddle.Checkout.open({
-        transactionId: txnId,
-        onCheckoutComplete: () => {
-          /* back to bot when payment succeeds */
-          location.href = "https://t.me/Sippurim_Bot?start=payment_success";
-        },
-        onCheckoutClose: () => {
-          /* user closed popup – just stay on page or go back */
-        }
-      });
-    }
-  });
-
-  /* 3️⃣  Keep the red BUY button for normal visitors */
-  const buyBtn = document.getElementById("buy-now");
+  /* 3️⃣  ‘Buy now’ button for normal visitors */
+  const buyBtn = document.getElementById('buy-now');
   if (buyBtn) {
-    buyBtn.addEventListener("click", e => {
+    buyBtn.addEventListener('click', e => {
       e.preventDefault();
-      location.href = "https://t.me/Sippurim_Bot?start=buy";
+      location.href = 'https://t.me/Sippurim_Bot?start=buy';
     });
   }
 </script>
