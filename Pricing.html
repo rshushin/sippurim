@@ -78,13 +78,9 @@
 <!-- 1️⃣  Include Paddle.js (UMD build works everywhere) -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  /* 2️⃣  Tell Paddle we’re in the Sandbox */
-  Paddle.Environment.set('sandbox');
-
-  /* 3️⃣  Authenticate this page with a SANDBOX client-side token.
-         Create one in Dashboard → Developer tools → Authentication. */
+  Paddle.Environment.set('production');  // Changed from 'sandbox'
   Paddle.Initialize({
-    token: 'test_6da40b448a20d38ca4370d87a8e'   // ← paste YOUR token
+    token: 'live_4120ba8cd45f29fefee63668e39'  // Your live client token
   }).then(() => {
 
     /* 4️⃣  If the bot sent us here with ?_ptxn=… open the overlay */
