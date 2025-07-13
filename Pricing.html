@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <title>Pay • Sippurim Bot</title>
 
-  <!-- Theme stylesheet (leave as‑is) -->
+  <!-- Theme stylesheet -->
   <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 <body class="no-sidebar">
 <div id="page-wrapper">
 
-  <!-- ▸ HEADER + NAV ----------------------------------------------------- -->
+  <!-- ▸ HEADER ----------------------------------------------------------- -->
   <header id="header">
     <div class="container">
       <h1><a href="index.html">Sippurim Bot</a></h1>
@@ -28,7 +28,7 @@
     </nav>
   </header>
 
-  <!-- ▸ MAIN CONTENT ----------------------------------------------------- -->
+  <!-- ▸ MAIN ------------------------------------------------------------- -->
   <section id="main">
     <div class="container">
       <section id="content">
@@ -37,20 +37,21 @@
 
           <!-- English -->
           <p lang="en">
-            Lifetime access costs <strong>€10</strong> and unlocks 350 curated Israeli songs with vocabulary & lyric links.
+            Lifetime access costs <strong>€10</strong> and unlocks 350 curated Israeli
+            songs with vocabulary &amp; lyric links.
           </p>
 
           <!-- Russian -->
           <p lang="ru">
-            Пожизненный доступ стоит <strong>10&nbsp;€</strong> и открывает 350 израильских песен со словарём и ссылками на текст.
+            Пожизненный доступ стоит <strong>10&nbsp;€</strong> и открывает 350 израильских песен
+            со словарём и ссылками на текст.
           </p>
 
-          <!-- Buttons -->
           <ul class="actions">
-            <!-- This button works for visitors who arrive WITHOUT a _ptxn parameter.
-                 It creates a Transaction on your backend then opens the Paddle overlay. -->
             <li>
-              <a id="buy-now" class="button primary" href="#">Buy&nbsp;now&nbsp;/&nbsp;Купить</a>
+              <a id="buy-now" class="button primary" href="#">
+                Buy&nbsp;now&nbsp;/&nbsp;Купить
+              </a>
             </li>
           </ul>
         </article>
@@ -61,45 +62,46 @@
   <!-- ▸ FOOTER ----------------------------------------------------------- -->
   <footer id="footer">
     <div class="container">
-      <p>&copy;&nbsp;2025 Sippurim. All rights reserved.</p>
+      <p>&copy;&nbsp;2025&nbsp;Sippurim. All rights reserved.</p>
     </div>
   </footer>
 
 </div>
 
-<!-- Core theme scripts -->
+<!-- Core theme scripts (unchanged) -->
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/browser.min.js"></script>
 <script src="assets/js/breakpoints.min.js"></script>
 <script src="assets/js/util.js"></script>
 <script src="assets/js/main.js"></script>
 
-<!-- ▸ Paddle checkout integration -->
-<!-- 1️⃣  Include Paddle.js (UMD build works everywhere) -->
+<!-- ▸ Paddle checkout --------------------------------------------------- -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  Paddle.Environment.set('production');  // Changed from 'sandbox'
-  Paddle.Initialize({
-    token: 'live_4120ba8cd45f29fefee63668e39'  // Your live client token
-  }).then(() => {
+  /* 1️⃣  Configure Paddle for LIVE environment */
+  Paddle.Environment.set('production');
+  Paddle.Initialize({ token: 'live_4120ba8cd45f29fefee63668e39' }).then(() => {
 
-    /* 4️⃣  If the bot sent us here with ?_ptxn=… open the overlay */
-    const txnId = new URLSearchParams(location.search).get('_ptxn');
+    /* 2️⃣  If the bot sent us here with &_ptxn=… open the overlay immediately */
+    const params  = new URLSearchParams(location.search);
+    const txnId   = params.get('_ptxn');
+    const tgId    = params.get('tg');        // optional Telegram ID
+
     if (txnId) {
       Paddle.Checkout.open({
-        transactionId: txnId,
-
-        /* Optional: kick user back to Telegram when payment succeeds */
+        transactionId : txnId,
         onCheckoutComplete: () =>
           location.href = 'https://t.me/Sippurim_Bot?start=payment_success'
       });
+      return;   // nothing else to do
     }
-  });
 
-  /* 5️⃣  Fallback button for visitors who came without a _ptxn */
-  document.getElementById('buy-now')?.addEventListener('click', e => {
-    e.preventDefault();
-    location.href = 'https://t.me/Sippurim_Bot?start=buy';
+    /* 3️⃣  Fallback button for visitors who came without &_ptxn */
+    document.getElementById('buy-now')?.addEventListener('click', e => {
+      e.preventDefault();
+      /* We don’t have a transaction yet → jump to the bot so it can create one */
+      location.href = 'https://t.me/Sippurim_Bot?start=buy';
+    });
   });
 </script>
 </body>
