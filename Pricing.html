@@ -48,7 +48,7 @@
           </p>
 
           <a class="button primary"
-            href="https://t.me/Sippurim_Bot?start=buy"
+            href="https://t.me/Sippurim_Bot?start=pay"
             target="_blank" rel="noopener">
             Buy&nbsp;now&nbsp;/&nbsp;Купить
           </a>
@@ -99,7 +99,7 @@
     document.getElementById('buy-now')?.addEventListener('click', e => {
       e.preventDefault();
       /* We don’t have a transaction yet → jump to the bot so it can create one */
-      location.href = 'https://t.me/Sippurim_Bot?pay=buy';
+      location.href = 'https://t.me/Sippurim_Bot?start=pay';
     });
   });
 </script>
