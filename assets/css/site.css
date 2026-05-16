@@ -423,11 +423,13 @@ footer.site nav a:hover { color: var(--text); }
   /* hero: stack vertically on mobile, no overlap */
   .hero {
     min-height: auto;
-    padding: 56px 0 72px;
+    padding: 48px 0 80px;
     display: block;
+    background:
+      radial-gradient(ellipse 90% 40% at 50% 65%, rgba(245,244,238,0.08) 0%, transparent 65%);
   }
   .hero-overlay { display: none; }
-  .hero-content { text-align: center; margin-bottom: 48px; }
+  .hero-content { text-align: center; margin-bottom: 40px; }
   .hero h1 {
     font-size: clamp(40px, 11vw, 64px);
     margin: 0;
@@ -440,5 +442,12 @@ footer.site nav a:hover { color: var(--text); }
     width: 100%;
     max-width: 100%;
     margin: 0;
+    filter: none;
+  }
+  .hero .laptop .screen {
+    box-shadow:
+      0 30px 70px -10px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(255,255,255,0.06) inset,
+      0 0 80px rgba(245,244,238,0.06);
   }
 }
