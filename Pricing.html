@@ -1,90 +1,82 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Pay • Sippurim Bot</title>
-
-  <!-- Theme stylesheet -->
-  <link rel="stylesheet" href="assets/css/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pay · Sippurim Bot</title>
+  <meta name="description" content="Lifetime access to Sippurim Bot — €10. Pay via Paddle." />
+  <link rel="canonical" href="https://sippurim.com/Pricing.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/site.css" />
 </head>
-<body class="no-sidebar">
-<div id="page-wrapper">
+<body>
 
-  <!-- ▸ HEADER ----------------------------------------------------------- -->
-  <header id="header">
-    <div class="container">
-      <h1><a href="index.html">Sippurim Bot</a></h1>
-      <p>Pay • Оплата</p>
-    </div>
-
-    <nav id="nav">
-      <ul>
-        <li><a class="icon solid fa-home" href="index.html"><span>Home</span></a></li>
-        <li class="current"><a class="icon solid fa-tags" href="Pricing.html"><span>Pricing</span></a></li>
-        <li><a class="icon solid fa-file" href="Refund.html"><span>Refund</span></a></li>
-        <li><a class="icon solid fa-shield-alt" href="Privacy.html"><span>Privacy</span></a></li>
-        <li><a class="icon solid fa-book" href="Terms.html"><span>Terms</span></a></li>
-      </ul>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">Sippurim</a>
+    <nav>
+      <a href="index.html#work">Work</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#contact">Contact</a>
     </nav>
-  </header>
+    <a href="mailto:roman.shushin@gmail.com" class="pill">Get in touch</a>
+  </div>
+</header>
 
-  <!-- ▸ MAIN ------------------------------------------------------------- -->
-  <section id="main">
-    <div class="container">
-      <section id="content">
-        <article class="box post">
-          <header><h2>Price • Стоимость</h2></header>
+<section class="doc">
+  <div class="wrap">
 
-          <!-- English -->
-          <p lang="en">
-            Lifetime access costs <strong>€10</strong> and unlocks 350 curated Israeli
-            songs with vocabulary &amp; lyric links.
-          </p>
-
-          <!-- Russian -->
-          <p lang="ru">
-            Пожизненный доступ стоит <strong>10&nbsp;€</strong> и открывает 350 израильских песен
-            со словарём и ссылками на текст.
-          </p>
-
-          <a class="button primary"
-            href="https://t.me/Sippurim_Bot?start=pay"
-            target="_blank" rel="noopener">
-            Buy&nbsp;now&nbsp;/&nbsp;Купить
-          </a>
-
-        </article>
-      </section>
+    <div class="doc-head">
+      <div class="eyebrow">Sippurim Bot</div>
+      <h1 class="doc-title">Pricing · Стоимость</h1>
     </div>
-  </section>
 
-  <!-- ▸ FOOTER ----------------------------------------------------------- -->
-  <footer id="footer">
-    <div class="container">
-      <p>&copy;&nbsp;2025&nbsp;Sippurim. All rights reserved.</p>
+    <nav class="doc-nav" aria-label="Bot section navigation">
+      <a href="Sippurim.html">Overview</a>
+      <a href="Pricing.html" class="current">Pricing</a>
+      <a href="Refund.html">Refund</a>
+      <a href="Privacy.html">Privacy</a>
+      <a href="Terms.html">Terms</a>
+    </nav>
+
+    <div class="doc-body">
+      <span class="lang-tag">EN</span>
+      <p>Lifetime access costs <strong>€10</strong> and unlocks 350 curated Israeli songs with vocabulary and lyric links.</p>
+
+      <hr />
+
+      <span class="lang-tag">RU</span>
+      <p>Пожизненный доступ стоит <strong>10&nbsp;€</strong> и открывает 350 израильских песен со словарём и ссылками на текст.</p>
     </div>
-  </footer>
 
-</div>
+    <div class="buy-callout">
+      <div class="price">€10</div>
+      <p class="price-sub">One-time payment · Lifetime access</p>
+      <div class="actions">
+        <a id="buy-now" class="pill" href="https://t.me/Sippurim_Bot?start=pay" target="_blank" rel="noopener">Buy now · Купить</a>
+      </div>
+    </div>
 
-<!-- Core theme scripts (unchanged) -->
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/browser.min.js"></script>
-<script src="assets/js/breakpoints.min.js"></script>
-<script src="assets/js/util.js"></script>
-<script src="assets/js/main.js"></script>
+  </div>
+</section>
 
-<!-- ▸ Paddle checkout --------------------------------------------------- -->
+<footer class="site">
+  <div class="wrap">
+    <div>&copy; 2026 Sippurim</div>
+  </div>
+</footer>
+
+<!-- Paddle checkout (live) -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  /* 1️⃣  Configure Paddle for LIVE environment */
   Paddle.Environment.set('production');
   Paddle.Initialize({ token: 'live_4120ba8cd45f29fefee63668e39' }).then(() => {
 
-    /* 2️⃣  If the bot sent us here with &_ptxn=… open the overlay immediately */
     const params  = new URLSearchParams(location.search);
     const txnId   = params.get('_ptxn');
-    const tgId    = params.get('tg');        // optional Telegram ID
+    const tgId    = params.get('tg');
 
     if (txnId) {
       Paddle.Checkout.open({
@@ -92,13 +84,11 @@
         onCheckoutComplete: () =>
           location.href = 'https://t.me/Sippurim_Bot?start=payment_success'
       });
-      return;   // nothing else to do
+      return;
     }
 
-    /* 3️⃣  Fallback button for visitors who came without &_ptxn */
     document.getElementById('buy-now')?.addEventListener('click', e => {
       e.preventDefault();
-      /* We don’t have a transaction yet → jump to the bot so it can create one */
       location.href = 'https://t.me/Sippurim_Bot?start=pay';
     });
   });
