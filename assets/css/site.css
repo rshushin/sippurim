@@ -412,7 +412,6 @@ footer.site nav a:hover { color: var(--text); }
 
 @media (max-width: 900px) {
   section { padding: 80px 0; }
-  .hero { padding: 64px 0 80px; }
   .grid { grid-template-columns: 1fr; }
   .features { grid-template-columns: 1fr; }
   .about-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -420,4 +419,26 @@ footer.site nav a:hover { color: var(--text); }
   header.site nav { display: none; }
   .doc-nav { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
   .doc-nav a { white-space: nowrap; }
+
+  /* hero: stack vertically on mobile, no overlap */
+  .hero {
+    min-height: auto;
+    padding: 56px 0 72px;
+    display: block;
+  }
+  .hero-overlay { display: none; }
+  .hero-content { text-align: left; margin-bottom: 48px; }
+  .hero h1 {
+    font-size: clamp(40px, 11vw, 64px);
+    margin: 0;
+    text-shadow: none;
+  }
+  .hero-visual {
+    position: relative;
+    top: auto; left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
 }
