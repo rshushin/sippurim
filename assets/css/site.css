@@ -188,7 +188,7 @@ section + section { border-top: 1px solid var(--border); }
 /* project grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 }
 .card {
