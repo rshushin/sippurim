@@ -187,7 +187,7 @@ section + section { border-top: 1px solid var(--border); }
 }
 .title-link:hover .arrow { transform: translateX(6px); color: var(--accent); }
 
-/* split layout — text and visual side by side */
+/* split layout – text and visual side by side */
 .split {
   display: grid;
   grid-template-columns: 1fr 1fr;
