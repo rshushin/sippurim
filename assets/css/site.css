@@ -130,9 +130,8 @@ h3 {
 .hero-overlay {
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(10,10,11,0.40) 0%, rgba(10,10,11,0) 70%);
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(10,10,11,0.35) 0%, rgba(10,10,11,0.78) 70%, rgba(10,10,11,0.92) 100%);
   z-index: 2;
-  pointer-events: none;
 }
 .hero-content {
   position: relative;
