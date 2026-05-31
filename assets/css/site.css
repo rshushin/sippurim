@@ -50,9 +50,9 @@ header.site .brand {
   gap: 10px;
 }
 header.site .brand-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
   display: block;
 }
 header.site nav { display: flex; gap: 28px; font-size: 14px; }
